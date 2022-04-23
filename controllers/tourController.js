@@ -6,8 +6,23 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // BUILD QUERY
+    const queryObj = { ...req.query };
+    const excudedFields = ['page', 'sort', 'limit', 'fields'];
+    excudedFields.forEach((el) => delete queryObj[el]);
 
+    const query = Tour.find(queryObj);
+
+    // const tours = await Tour.find()
+    //   .where('duraction')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // EXECUTE QUERY
+    const tours = await query;
+
+    // SEND RESPONSE
     res.status(200).json({
       status: 'SUCCESS',
       totalCount: tours.length,
@@ -55,7 +70,7 @@ exports.createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'FAILED',
-      message: 'Invalid data sent!',
+      message: err,
     });
   }
 };
